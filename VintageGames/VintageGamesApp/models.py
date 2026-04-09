@@ -50,7 +50,7 @@ class Game(models.Model):
         f"{self.user.username} - {self.game.name}"
 
 class Session(models.Model):
-    game = models.ForeignKey(Games, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     score = models.IntegerField()
