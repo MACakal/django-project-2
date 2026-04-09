@@ -40,7 +40,7 @@ class Profile(models.Model):
 
             img.save(self.profile_picture.path)
 
-class Games(models.Model):
+class Game(models.Model):
     name = models.CharField(max_length=100)
     releaseyear = models.IntegerField()
     console = models.CharField(max_length=100)
