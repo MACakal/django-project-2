@@ -13,6 +13,7 @@ from django.db.models import F
 def homepage(request):
     return render(request, "base/index.html")
 
+@login_required
 def games(request):
     games = Game.objects.all()
     context = {'games': games}
