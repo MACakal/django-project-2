@@ -7,9 +7,9 @@ from PIL import Image
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    location = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)
-    bio = models.TextField()
+    favoriteconsole = models.CharField(max_length=100)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     def __str__(self):
@@ -39,3 +39,27 @@ class Profile(models.Model):
             img = img.resize((500, 500))
 
             img.save(self.profile_picture.path)
+
+class Games(models.Model):
+    name = models.CharField(max_length=100)
+    releaseyear = models.IntegerField()
+    console = models.CharField(max_length=100)
+    approved = models.BooleanField(default = False)
+    approvedby = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        f"{self.user.username} - {self.game.name}"
+
+class Session(models.Model):
+    game = models.ForeignKey(Games, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    score = models.IntegerField()
+    
+    def __str__(self):
+        return self.game
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
