@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <h1>All games</h1>
+    {% for game in games %}
+        <div class="time-entry">
+            <span class="label"> Name:</span>
+            <span class="value">{{ game.name }}</span>
+        </div>
+        <div class="time-entry">
+            <span class="label">Release Year:</span>
+            <span class="value">{{ game.releaseyear }}</span>
+        </div>
+        <div class="time-entry">
+            <span class="label">Release Year:</span>
+            <span class="value">{{ game.console }}</span>
+        </div>
+        <br>
+    {% endfor %}
+{% endblock content %}
