@@ -14,7 +14,7 @@ class ProfileForm(forms.ModelForm):
 class GameForm(forms.ModelForm):
     class Meta:
         model = Game
-        fields = ("name", "release_year", "console")
+        fields = ("name", "releaseyear", "console")
 
 class SessionForm(forms.ModelForm):
     class Meta:
