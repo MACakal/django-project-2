@@ -2,6 +2,7 @@ from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.views import PasswordChangeView
 
 urlpatterns = [
     path("", views.homepage, name="home"),
@@ -13,6 +14,13 @@ urlpatterns = [
     path("new_sessions/", views.new_sessions, name="new_sessions"),
     path("my_sessions/", views.my_sessions, name="my_sessions"),
     path("edit_profile/", views.edit_profile, name="edit_profile"),
+    path(
+        "password-change/",
+        PasswordChangeView.as_view(
+            template_name="base/change_password.html",
+        ),
+        name="password_change",
+    ),
     path("newsfeed/", views.newsfeed, name="newsfeed"),
 ]
 
