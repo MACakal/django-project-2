@@ -4,6 +4,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from .forms import ProfileForm
 
 def homepage(request):
     return render(request, "base/index.html")
@@ -42,7 +43,21 @@ def my_sessions(request):
 
 @login_required
 def edit_profile(request):
-    return render(request, "base/edit_profile.html")
+    profile = request.user.profile
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+    else:
+        form = ProfileForm(instance=profile)
+
+    context = {
+        "form": form,
+        "profile": profile
+    }
+    return render(request, "base/edit_profile.html", context)
 
 @login_required
 def newsfeed(request):
