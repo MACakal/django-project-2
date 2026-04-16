@@ -45,9 +45,15 @@ class Game(models.Model):
     releaseyear = models.IntegerField()
     console = models.CharField(max_length=100)
     approved = models.BooleanField(default = False)
-    approvedby = models.ForeignKey(User, on_delete=models.CASCADE)
+    approvedby = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
     def __str__(self):
-        f"{self.user.username} - {self.game.name}"
+        return self.name
 
 class Session(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
