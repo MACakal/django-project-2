@@ -4,7 +4,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ProfileForm
+from .forms import ProfileForm,SessionForm
 
 def homepage(request):
     return render(request, "base/index.html")
@@ -35,7 +35,20 @@ def unapproved_games(request):
 
 @login_required
 def new_sessions(request):
-    return render(request, "base/new_sessions.html")
+    profile = request.user.profile
+    if request.method == "POST":
+        form = SessionForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("new_sessions")
+    else:
+        form = SessionForm(instance=profile)
+
+    context = {
+        "form": form,
+        "profile": profile
+    }
+    return render(request, "base/add_sessions.html",context)
 
 @login_required
 def my_sessions(request):
