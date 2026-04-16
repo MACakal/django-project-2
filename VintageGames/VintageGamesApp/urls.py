@@ -11,6 +11,7 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("suggest_game/", views.suggest_game, name="suggest_game"),
     path("unapproved_games/", views.unapproved_games, name="unapproved_games"),
+    path("approve_game/<int:pk>/", views.approve_game, name="approve_game"),
     path("new_sessions/", views.new_sessions, name="new_sessions"),
     path("my_sessions/", views.my_sessions, name="my_sessions"),
     path("edit_profile/", views.edit_profile, name="edit_profile"),

@@ -1,0 +1,17 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<h2>Unapproved Games</h2>
+
+{% for game in games %}
+    <div class="game-item">
+        <p>{{ game.name }} ({{ game.releaseyear }}) - {{ game.console }}</p>
+        <form method="post" action="{% url 'approve_game' game.pk %}">
+            {% csrf_token %}
+            <button type="submit">Approve</button>
+        </form>
+    </div>
+{% empty %}
+    <p>No unapproved games.</p>
+{% endfor %}
+
+{% endblock content %}

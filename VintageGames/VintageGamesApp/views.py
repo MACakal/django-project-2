@@ -4,7 +4,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ProfileForm,SessionForm
+from .forms import ProfileForm,SessionForm,GameForm
+from .models import Game
 
 def homepage(request):
     return render(request, "base/index.html")
@@ -23,15 +24,45 @@ def register(request):
 
 @login_required
 def games(request):
-    return render(request, "base/games.html")
+    games = Game.objects.filter(approved=True)
+    context = {"games": games}
+    return render(request, "base/games.html",context)
 
 @login_required
 def suggest_game(request):
-    return render(request, "base/suggest_game.html")
+    if request.method == "POST":
+        form = GameForm(request.POST)
+        if form.is_valid():
+            game = form.save(commit=False)
+            if request.user.is_staff:
+                game.approved = True
+                game.approvedby = request.user
+                messages.success(request, " Admin added Game")
+            else:
+                game.approved = False
+                messages.success(request, "Game suggestion submitted for review.")
+            game.save()
+            form = GameForm()
+            return render(request, "base/suggest_game.html", {"form": form})
+    else:
+        form = GameForm()
+    return render(request, "base/suggest_game.html", {"form": form})
 
 @staff_member_required
 def unapproved_games(request):
-    return render(request, "base/unapproved_games.html")
+    games = Game.objects.filter(approved=False)
+    context = {"games": games}
+    return render(request, "base/unapproved_games.html",context)
+
+@staff_member_required
+def approve_game(request, pk):
+    game = Game.objects.get(pk=pk, approved=False)
+    game.approved = True
+    game.approvedby = request.user
+    game.save()
+    messages.success(request, f"'{game}' approved!")
+    return redirect("unapproved_games")
+
 
 @login_required
 def new_sessions(request):
