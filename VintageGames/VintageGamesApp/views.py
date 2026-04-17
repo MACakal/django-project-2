@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileForm,SessionForm,GameForm
-from .models import Game
+from .models import Game,Session
 
 def homepage(request):
     return render(request, "base/index.html")
@@ -66,24 +66,45 @@ def approve_game(request, pk):
 
 @login_required
 def new_sessions(request):
-    profile = request.user.profile
     if request.method == "POST":
-        form = SessionForm(request.POST, instance=profile)
+        form = SessionForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("new_sessions")
-    else:
-        form = SessionForm(instance=profile)
+            session = form.save(commit=False)
+            session.user = request.user         
+            session.save()                    
 
-    context = {
-        "form": form,
-        "profile": profile
-    }
-    return render(request, "base/add_sessions.html",context)
+            messages.success(request, "Session added successfully")
+            return redirect("my_sessions")
+    else:
+        form = SessionForm()
+
+    context = {"form": form}
+    return render(request, "base/add_sessions.html", context)
 
 @login_required
 def my_sessions(request):
-    return render(request, "base/my_sessions.html")
+    sessions = Session.objects.filter(user=request.user).order_by('-date')
+    context = {"sessions": sessions}
+    return render(request, "base/my_sessions.html", context)
+
+@login_required
+def edit_session(request, pk):
+    session = get_object_or_404(Session, pk=pk)
+    if request.method == "POST":
+        if request.POST.get("delete"):
+            session.delete()
+            messages.success(request, "Session deleted")
+            return redirect("my_sessions")
+
+        form = SessionForm(request.POST, instance=session)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Session updated successfully")
+            return redirect("my_sessions")
+    else:
+        form = SessionForm(instance=session)
+    context = {"form": form, "edit": True}
+    return render(request, "base/edit_session.html", context)
 
 @login_required
 def edit_profile(request):
@@ -102,7 +123,7 @@ def edit_profile(request):
         "profile": profile
     }
     return render(request, "base/edit_profile.html", context)
-
 @login_required
 def newsfeed(request):
     return render(request, "base/newsfeed.html")
+
