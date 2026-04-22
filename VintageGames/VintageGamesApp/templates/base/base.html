@@ -30,6 +30,7 @@
 
             {% if user.is_staff %}
                 <a href="{% url 'unapproved_games' %}" class="nav-item">Approve Game</a>
+                <a href="{% url 'my_sessions_admin' %}" class="nav-item">All Sessions</a>
             {% endif %}
 
             <div class="nav-right">

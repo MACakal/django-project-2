@@ -87,6 +87,21 @@ def my_sessions(request):
     context = {"sessions": sessions}
     return render(request, "base/my_sessions.html", context)
 
+# admin
+@staff_member_required
+def my_sessions_admin(request):
+    if request.method == "POST":
+        if request.POST.get("delete") and request.POST.get("session_id"):
+            session_id = request.POST["session_id"]
+            session = get_object_or_404(Session, pk=session_id)
+            session.delete()
+            messages.success(request, "Session deleted successfully")
+            return redirect("my_sessions_admin")
+    
+    sessions = Session.objects.all()
+    context = {"sessions": sessions}
+    return render(request, "base/show-all-sessions-admin.html", context)
+
 @login_required
 def edit_session(request, pk):
     session = get_object_or_404(Session, pk=pk)
