@@ -14,6 +14,8 @@ urlpatterns = [
     path("approve_game/<int:pk>/", views.approve_game, name="approve_game"),
     path("new_sessions/", views.new_sessions, name="new_sessions"),
     path("my_sessions/", views.my_sessions, name="my_sessions"),
+    # admin all sessions 
+    path("my_sessions_admin/", views.my_sessions_admin, name="my_sessions_admin"),
     path("edit_session/<int:pk>/", views.edit_session, name="edit_session"),
     path("edit_profile/", views.edit_profile, name="edit_profile"),
     path(
