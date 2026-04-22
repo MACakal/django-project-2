@@ -1,12 +1,10 @@
 {% extends "base/base.html" %}
 {% block content %}
-<h1>All session</h1>
+<h1>My session</h1>
 {% for session in sessions %}
-
 <strong>Game Name:</strong>{{ session.game.name }}<br>
 <strong>Date:</strong>{{ session.date }}<br>
 <strong>Score:</strong>{{ session.score}}<br>
-
 <br>
 <button>
   <a href="{% url 'edit_session' session.pk %}">Edit</a>
