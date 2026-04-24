@@ -10,7 +10,7 @@
             {% if session.user.profile.profile_picture %}
                 <img src="{{ session.user.profile.profile_picture.url }}" class="session-avatar">
             {% endif %}
-            <strong>{{ session.user.get_username }}</strong>
+            <a href="{% url 'public_profile' session.user.username %}"><strong>{{ session.user.get_username }}</strong></a>
         </div>
         <div class="session-card-body">
             <p><strong>Game:</strong> {{ session.game.name }}</p>

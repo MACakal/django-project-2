@@ -44,6 +44,7 @@ class Game(models.Model):
     name = models.CharField(max_length=100)
     releaseyear = models.IntegerField()
     console = models.CharField(max_length=100)
+    genre = models.CharField(max_length=100, blank=True)
     approved = models.BooleanField(default = False)
     approvedby = models.ForeignKey(
         User,

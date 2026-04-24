@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ game.name }}{% endblock %}
+{% block content %}
+<h1>{{ game.name }}</h1>
+
+<div class="game-item">
+    <p><strong>Console:</strong> {{ game.console }}</p>
+    <p><strong>Release Year:</strong> {{ game.releaseyear }}</p>
+    {% if game.genre %}<p><strong>Genre:</strong> {{ game.genre }}</p>{% endif %}
+    <p><strong>Times Played:</strong> {{ total_played }}</p>
+    {% if record %}
+        <p><strong>Record Score:</strong> {{ record.score }} &mdash; by {{ record.user.username }}</p>
+    {% else %}
+        <p><strong>Record Score:</strong> None yet</p>
+    {% endif %}
+</div>
+
+<a href="{% url 'new_sessions' %}?game_id={{ game.pk }}" class="btn">Play this game &rarr;</a>
+
+{% endblock content %}

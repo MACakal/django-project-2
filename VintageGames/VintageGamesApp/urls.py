@@ -26,6 +26,8 @@ urlpatterns = [
         name="password_change",
     ),
     path("newsfeed/", views.newsfeed, name="newsfeed"),
+    path("games/<int:pk>/", views.game_detail, name="game_detail"),
+    path("profile/<str:username>/", views.public_profile, name="public_profile"),
 ]
 
 if settings.DEBUG:

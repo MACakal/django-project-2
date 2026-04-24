@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+{% block content %}
+<h1>{{ profile_user.username }}</h1>
+
+{% with profile_user.profile as p %}
+{% if p.city %}<p><strong>City:</strong> {{ p.city }}</p>{% endif %}
+{% if p.favoriteconsole %}<p><strong>Favorite Console:</strong> {{ p.favoriteconsole }}</p>{% endif %}
+{% if p.date_of_birth %}<p><strong>Date of Birth:</strong> {{ p.date_of_birth }}</p>{% endif %}
+{% endwith %}
+
+<h2>Sessions</h2>
+{% if sessions %}
+    {% for session in sessions %}
+    <div class="session-card">
+        <div class="session-card-body">
+            <p><strong>Game:</strong> {{ session.game.name }}</p>
+            <p><strong>Score:</strong> {{ session.score }}</p>
+            <p><strong>Date:</strong> {{ session.date }}</p>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No sessions yet.</p>
+{% endif %}
+{% endblock content %}

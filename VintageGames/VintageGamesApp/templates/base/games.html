@@ -4,7 +4,7 @@
 <h1>All Games</h1>
 {% for game in games %}
 <div class="game-item">
-    <p><strong>{{ game.name }}</strong> &mdash; {{ game.console }} ({{ game.releaseyear }})</p>
+    <p><a href="{% url 'game_detail' game.pk %}"><strong>{{ game.name }}</strong></a> &mdash; {{ game.console }} ({{ game.releaseyear }})</p>
 </div>
 {% empty %}
 <p>No games yet.</p>

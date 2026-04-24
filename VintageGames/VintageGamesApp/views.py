@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ProfileForm,SessionForm,GameForm
-from .models import Game,Session
+from django.db.models import Max
+from .forms import ProfileForm, SessionForm, GameForm
+from .models import Game, Session
 
 def homepage(request):
     return render(request, "base/index.html")
@@ -26,7 +28,19 @@ def register(request):
 def games(request):
     games = Game.objects.filter(approved=True)
     context = {"games": games}
-    return render(request, "base/games.html",context)
+    return render(request, "base/games.html", context)
+
+@login_required
+def game_detail(request, pk):
+    game = get_object_or_404(Game, pk=pk, approved=True)
+    sessions = Session.objects.filter(game=game)
+    total_played = sessions.count()
+    record = sessions.order_by('-score').first()
+    return render(request, "base/game_detail.html", {
+        "game": game,
+        "total_played": total_played,
+        "record": record,
+    })
 
 @login_required
 def suggest_game(request):
@@ -37,7 +51,7 @@ def suggest_game(request):
             if request.user.is_staff:
                 game.approved = True
                 game.approvedby = request.user
-                messages.success(request, " Admin added Game")
+                messages.success(request, "Admin added Game")
             else:
                 game.approved = False
                 messages.success(request, "Game suggestion submitted for review.")
@@ -52,7 +66,7 @@ def suggest_game(request):
 def unapproved_games(request):
     games = Game.objects.filter(approved=False)
     context = {"games": games}
-    return render(request, "base/unapproved_games.html",context)
+    return render(request, "base/unapproved_games.html", context)
 
 @staff_member_required
 def approve_game(request, pk):
@@ -67,16 +81,19 @@ def approve_game(request, pk):
 @login_required
 def new_sessions(request):
     if request.method == "POST":
-        form = SessionForm(request.POST)
+        form = SessionForm(request.POST, user=request.user)
         if form.is_valid():
             session = form.save(commit=False)
-            session.user = request.user         
-            session.save()                    
-
+            session.user = request.user
+            session.save()
             messages.success(request, "Session added successfully")
             return redirect("my_sessions")
     else:
-        form = SessionForm()
+        initial = {}
+        game_id = request.GET.get('game_id')
+        if game_id:
+            initial['game'] = game_id
+        form = SessionForm(user=request.user, initial=initial)
 
     context = {"form": form}
     return render(request, "base/add_sessions.html", context)
@@ -87,7 +104,6 @@ def my_sessions(request):
     context = {"sessions": sessions}
     return render(request, "base/my_sessions.html", context)
 
-# admin
 @staff_member_required
 def my_sessions_admin(request):
     if request.method == "POST":
@@ -97,7 +113,7 @@ def my_sessions_admin(request):
             session.delete()
             messages.success(request, "Session deleted successfully")
             return redirect("my_sessions_admin")
-    
+
     sessions = Session.objects.all()
     context = {"sessions": sessions}
     return render(request, "base/show-all-sessions-admin.html", context)
@@ -105,19 +121,23 @@ def my_sessions_admin(request):
 @login_required
 def edit_session(request, pk):
     session = get_object_or_404(Session, pk=pk)
+    if session.user != request.user:
+        messages.error(request, "You can only edit your own sessions.")
+        return redirect("my_sessions")
+
     if request.method == "POST":
         if request.POST.get("delete"):
             session.delete()
             messages.success(request, "Session deleted")
             return redirect("my_sessions")
 
-        form = SessionForm(request.POST, instance=session)
+        form = SessionForm(request.POST, instance=session, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Session updated successfully")
             return redirect("my_sessions")
     else:
-        form = SessionForm(instance=session)
+        form = SessionForm(instance=session, user=request.user)
     context = {"form": form, "edit": True}
     return render(request, "base/edit_session.html", context)
 
@@ -126,7 +146,7 @@ def edit_profile(request):
     profile = request.user.profile
 
     if request.method == "POST":
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return redirect("home")
@@ -138,8 +158,17 @@ def edit_profile(request):
         "profile": profile
     }
     return render(request, "base/edit_profile.html", context)
+
 @login_required
 def newsfeed(request):
-    sessions = Session.objects.exclude(user=request.user).select_related('game', 'user', 'user__profile').order_by('-date')
+    sessions = Session.objects.select_related('game', 'user', 'user__profile').order_by('-date')
     return render(request, "base/newsfeed.html", {"sessions": sessions})
 
+@login_required
+def public_profile(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    sessions = Session.objects.filter(user=profile_user).select_related('game').order_by('-date')
+    return render(request, "base/public_profile.html", {
+        "profile_user": profile_user,
+        "sessions": sessions,
+    })
