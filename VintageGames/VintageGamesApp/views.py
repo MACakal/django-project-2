@@ -140,5 +140,6 @@ def edit_profile(request):
     return render(request, "base/edit_profile.html", context)
 @login_required
 def newsfeed(request):
-    return render(request, "base/newsfeed.html")
+    sessions = Session.objects.exclude(user=request.user).select_related('game', 'user', 'user__profile').order_by('-date')
+    return render(request, "base/newsfeed.html", {"sessions": sessions})
 

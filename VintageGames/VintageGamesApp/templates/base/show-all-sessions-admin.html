@@ -1,19 +1,25 @@
 {% extends "base/base.html" %}
+{% block title %}All Sessions{% endblock %}
 {% block content %}
-<h1>All sessions</h1>
+<h1>All Sessions</h1>
 {% for session in sessions %}
-<div>
-    <strong>User Name:</strong> {{ session.user.username }}<br>
-    <strong>Game Name:</strong> {{ session.game.name }}<br>
-    <strong>Date:</strong> {{ session.date }}<br>
-    <strong>Score:</strong> {{ session.score }}<br>
-    <br>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="session_id" value="{{ session.pk }}">
-        <input type="submit" name="delete" value="Delete Session">
-    </form>
+<div class="session-card">
+    <div class="session-card-header">{{ session.user.username }}</div>
+    <div class="session-card-body">
+        <p><strong>Game</strong> {{ session.game.name }}</p>
+        <p><strong>Console</strong> {{ session.game.console }}</p>
+        <p><strong>Score</strong> {{ session.score }}</p>
+        <p><strong>Date</strong> {{ session.date }}</p>
+    </div>
+    <div class="session-actions">
+        <form method="POST" style="border:none;background:none;padding:0;width:auto;">
+            {% csrf_token %}
+            <input type="hidden" name="session_id" value="{{ session.pk }}">
+            <button type="submit" name="delete" class="danger">Delete</button>
+        </form>
+    </div>
 </div>
+{% empty %}
+<p>No sessions found.</p>
 {% endfor %}
 {% endblock content %}
-

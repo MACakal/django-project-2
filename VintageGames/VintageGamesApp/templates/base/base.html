@@ -1,67 +1,61 @@
 {% load static %}
-<!DOCTYPE html> 
-<html lang="en"> 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-
-    <title>{% block title %}VintageGame{% endblock title %}</title> 
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VintageGames{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'base/css/style.css' %}">
-
     {% block csslinks %}{% endblock csslinks %}
 </head>
-
 <body>
-    <div class="nav-container">
-        <a href="{% url 'home' %}">
-            <img src="{% static 'base/img/logo.jpg' %}">
-        </a>
 
-        {% if user.is_authenticated %}
-            <a href="{% url 'newsfeed' %}" class="nav-item">Feed</a>
-            <a href="{% url 'games' %}" class="nav-item">Games</a>
-            <a href="{% url 'suggest_game' %}" class="nav-item">Suggest Games</a>
-            <a href="{% url 'new_sessions' %}" class="nav-item">New Session</a>
-            <a href="{% url 'my_sessions' %}" class="nav-item">My Sessions</a>
-            <a href="{% url 'edit_profile' %}" class="nav-item">Edit profile</a>
-            <a href="{% url 'password_change' %}">Change password</a>
+<nav class="nav-container">
+    <a href="{% url 'home' %}" class="nav-logo">
+        <img src="{% static 'base/img/logo.jpg' %}" alt="VintageGames">
+    </a>
 
-            {% if user.is_staff %}
-                <a href="{% url 'unapproved_games' %}" class="nav-item">Approve Game</a>
-                <a href="{% url 'my_sessions_admin' %}" class="nav-item">All Sessions</a>
-            {% endif %}
-
-            <div class="nav-right">
-                {% if user.profile.profile_picture %}
-                    <div class="nav-profile-wrapper">
-                        <img src="{{ user.profile.profile_picture.url }}" class="nav-profile-pic">
-                    </div>
-                {% endif %}
-
-                <form action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-btn-link">
-                        Logout {{ user.get_username }}
-                    </button>
-                </form>
-            </div>
-        {% else %}
-            <a href="{% url 'login' %}" class="nav-item">Login</a>
-            <a href="{% url 'register' %}" class="nav-item">Sign Up</a>
+    {% if user.is_authenticated %}
+    <div class="nav-links">
+        <a href="{% url 'newsfeed' %}" class="nav-item">Feed</a>
+        <a href="{% url 'games' %}" class="nav-item">Games</a>
+        <a href="{% url 'suggest_game' %}" class="nav-item">Suggest</a>
+        <a href="{% url 'new_sessions' %}" class="nav-item">New Session</a>
+        <a href="{% url 'my_sessions' %}" class="nav-item">My Sessions</a>
+        <a href="{% url 'edit_profile' %}" class="nav-item">Profile</a>
+        <a href="{% url 'password_change' %}" class="nav-item">Password</a>
+        {% if user.is_staff %}
+            <a href="{% url 'unapproved_games' %}" class="nav-item">Approve</a>
+            <a href="{% url 'my_sessions_admin' %}" class="nav-item">All Sessions</a>
         {% endif %}
     </div>
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-            {{ message }}<br>
-        {% endfor %}
+
+    <div class="nav-right">
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" class="nav-avatar" alt="avatar">
+        {% endif %}
+        <form action="{% url 'logout' %}" method="post" style="border:none;background:none;padding:0;width:auto;">
+            {% csrf_token %}
+            <button type="submit" class="nav-logout-btn">Logout</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="nav-links">
+        <a href="{% url 'login' %}" class="nav-item">Login</a>
+        <a href="{% url 'register' %}" class="nav-item">Sign Up</a>
     </div>
     {% endif %}
+</nav>
 
-    <div class="content">
-        {% block content %}{% endblock content %}
-    </div>
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}{{ message }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+</div>
+{% endif %}
+
+<div class="content">
+    {% block content %}{% endblock content %}
+</div>
+
 </body>
 </html>

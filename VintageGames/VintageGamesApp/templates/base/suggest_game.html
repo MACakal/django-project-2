@@ -1,11 +1,10 @@
 {% extends 'base/base.html' %}
-
+{% block title %}Suggest Game{% endblock %}
 {% block content %}
-    <h2>Suggest Game</h2>
-    <h2>Welcome {{ user.username }}</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Suggestion</button>
-    </form>
+<h1>Suggest a Game</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Suggestion</button>
+</form>
 {% endblock content %}

@@ -1,17 +1,20 @@
 {% extends "base/base.html" %}
+{% block title %}My Sessions{% endblock %}
 {% block content %}
-<h1>All session</h1>
+<h1>My Sessions</h1>
 {% for session in sessions %}
-
-<strong>Game Name:</strong>{{ session.game.name }}<br>
-<strong>Date:</strong>{{ session.date }}<br>
-<strong>Score:</strong>{{ session.score}}<br>
-
-<br>
-<button>
-  <a href="{% url 'edit_session' session.pk %}">Edit</a>
-</button><br>
-
+<div class="session-card">
+    <div class="session-card-body">
+        <p><strong>Game</strong> {{ session.game.name }}</p>
+        <p><strong>Console</strong> {{ session.game.console }}</p>
+        <p><strong>Score</strong> {{ session.score }}</p>
+        <p><strong>Date</strong> {{ session.date }}</p>
+    </div>
+    <div class="session-actions">
+        <a href="{% url 'edit_session' session.pk %}"><button type="button">Edit</button></a>
+    </div>
+</div>
+{% empty %}
+<p>You have no sessions yet. <a href="{% url 'new_sessions' %}">Add one</a>.</p>
 {% endfor %}
-
 {% endblock content %}
